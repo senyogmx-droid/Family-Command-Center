@@ -1,3 +1,8 @@
+## 📥 Download
+
+Go to the **Releases** section (right sidebar) and download `FamilyCommandCenter-windows.exe`.  
+Double‑click the file, then open your browser to `http://localhost:8080`.
+
 # Family-Command-Center
 # 🏠 Family Command Center
 
