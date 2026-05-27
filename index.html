@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Command Center</title>
+    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="left-column">
+            <div class="widget card" id="calendar-widget">
+                <h3><i class="fa-regular fa-calendar-days"></i> Family Schedule</h3>
+                <div class="widget-content calendar-container">
+                    <div class="calendar-details" id="calendar-details">
+                        <p class="select-prompt">Tap a day to see details</p>
+                    </div>
+                    <div class="calendar-right-side">
+                        <div class="calendar-day-labels">
+                            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                        </div>
+                        <div class="calendar-grid" id="calendar-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget solar-clock-card">
+                <div class="solar-clock-body">
+                    <div class="solar-half">
+                        <div class="half-header">⚡ Enphase Solar Status</div>
+                        <div class="solar-grid-inline">
+                            <div class="solar-column-card" id="solar-card-prod">
+                                <div class="solar-card-header">
+                                    <i class="fa-solid fa-sun"></i> Solar
+                                </div>
+                                <div class="solar-metric-sub">
+                                    <span class="sub-label">Current</span>
+                                    <span class="sub-value highlight-green" id="solar-current">-- kW</span>
+                                </div>
+                                <div class="solar-metric-sub">
+                                    <span class="sub-label">Today</span>
+                                    <span class="sub-value highlight-green" id="solar-today">-- kWh</span>
+                                </div>
+                            </div>
+                            <div class="solar-column-card" id="solar-card-cons">
+                                <div class="solar-card-header">
+                                    <i class="fa-solid fa-house"></i> Home
+                                </div>
+                                <div class="solar-metric-sub">
+                                    <span class="sub-label">Current</span>
+                                    <span class="sub-value highlight-orange" id="home-current">-- kW</span>
+                                </div>
+                                <div class="solar-metric-sub">
+                                    <span class="sub-label">Today</span>
+                                    <span class="sub-value highlight-orange" id="home-today">-- kWh</span>
+                                </div>
+                            </div>
+                            <div class="solar-column-card" id="solar-card-net">
+                                <div class="solar-card-header" id="net-header-label">
+                                    <i class="fa-solid fa-bolt"></i> Net Grid
+                                </div>
+                                <div class="solar-metric-sub">
+                                    <span class="sub-label">Current</span>
+                                    <span class="sub-value" id="net-current">-- kW</span>
+                                </div>
+                                <div class="solar-metric-sub">
+                                    <span class="sub-label">Today</span>
+                                    <span class="sub-value" id="net-today">-- kWh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inner-divider"></div>
+                    <div class="clock-half">
+                        <div class="half-header">🕒 Time</div>
+                        <div class="digital-clock-display">
+                            <span id="clock-digits">12:00</span>
+                            <span id="clock-period">PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget weather-section">
+                <div class="weather-container">
+                    <div class="weather-main-panel">
+                        <div class="weather-current-summary">
+                            <span id="weather-day-label">STAFFORD, VA 22554</span>
+                            <span id="weather-temp-main">--°F</span>
+                            <div id="weather-highlow-main">▲ --°F &nbsp;&nbsp; ▼ --°F</div>
+                            <span id="weather-cond-main">Loading weather systems...</span>
+                        </div>
+                    </div>
+                    <div class="weather-animation-viewport" id="weather-anim-icon"></div>
+                    <div class="forecast-track" id="weather-forecast-box"></div>
+                </div>
+            </div>
+
+            <div class="widget card" id="leaderboard-widget" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <h3><i class="fa-solid fa-trophy"></i> Family Leaderboard</h3>
+                <div class="widget-content leaderboard-flex-body" style="flex-grow: 1; margin-bottom: 8px;">
+                    <div class="leaderboard-list" id="leaderboard-list-body">
+                        <!-- Populated dynamically -->
+                    </div>
+                    <div class="star-vertical-divider"></div>
+                    <div class="star-highlight-panel" id="star-panel">
+                        <div class="star-icon-container">⭐</div>
+                        <div class="star-badge-text">Star of the Day</div>
+                        <div class="star-badge-name" id="star-of-day-name">Axel</div>
+                    </div>
+                </div>
+                <!-- Sleek child page link with next page arrow -->
+                <div class="leaderboard-footer" style="display: flex; justify-content: flex-end; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); width: 100%;">
+                    <a href="/child" style="color: var(--accent-blue); text-decoration: none; font-size: 0.85rem; font-weight: bold; font-family: var(--font-heading); display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease;" class="child-nav-arrow" onmouseover="this.style.color='#fff'; this.style.transform='translateX(4px)'" onmouseout="this.style.color='var(--accent-blue)'; this.style.transform='translateX(0)'">
+                        Go to Child Dashboard <i class="fa-solid fa-arrow-right-long" style="font-size: 0.95rem;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="version-telemetry-tag" style="margin-top: 25px; text-align: center; font-size: 0.75rem; font-family: 'Orbitron', sans-serif; color: #475569; letter-spacing: 1px;">
+                Family Command Center <span id="version-number">v3.5.4</span> Blueprint
+            </div>
+
+            <!-- Mobile App Download Link -->
+            <div class="apk-download-container" style="margin-top: 15px; text-align: center;">
+                <a href="/download/apk" style="display: inline-flex; align-items: center; gap: 8px; color: rgba(255, 255, 255, 0.45); text-decoration: none; font-size: 0.75rem; font-family: var(--font-heading); padding: 6px 12px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; background: rgba(255, 255, 255, 0.02); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);" onmouseover="this.style.color='#00e5ff'; this.style.borderColor='rgba(0, 229, 255, 0.3)'; this.style.background='rgba(0, 229, 255, 0.05)'; this.style.boxShadow='0 0 10px rgba(0, 229, 255, 0.15)'" onmouseout="this.style.color='rgba(255, 255, 255, 0.45)'; this.style.borderColor='rgba(255, 255, 255, 0.08)'; this.style.background='rgba(255, 255, 255, 0.02)'; this.style.boxShadow='none'">
+                    <i class="fa-brands fa-android" style="font-size: 0.85rem;"></i>
+                    Get Standalone Kiosk App (.APK)
+                </a>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="slideshow-container"></div>
+        </div>
+    </div>
+    <script src="app.js?v=6"></script>
+    <script>
+        // Fetch version dynamically from server
+        fetch('/api/version')
+            .then(res => res.json())
+            .then(data => {
+                const el = document.getElementById('version-number');
+                if (el) el.textContent = data.version;
+            })
+            .catch(err => console.warn("Could not fetch version", err));
+    </script>
+</body>
+</html>

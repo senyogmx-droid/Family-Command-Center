@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command setup Wizard - Family Command Center</title>
+    <link rel="stylesheet" href="/style.css?v=8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%) !important;
+            font-family: 'Inter', sans-serif;
+            color: #f8fafc;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Strict landscape kiosk constraints */
+        .welcome-wizard-box {
+            max-width: 1020px;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.45);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.12), 0 0 80px rgba(168, 85, 247, 0.08);
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            margin: auto 0;
+        }
+
+        .welcome-wizard-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4 0%, #a855f7 50%, #06b6d4 100%);
+            box-shadow: 0 2px 15px rgba(6, 182, 212, 0.5);
+        }
+
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .wizard-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            margin: 0;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #06b6d4 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .wizard-header p {
+            color: #94a3b8;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            margin: 6px 0 0 0;
+            font-weight: 400;
+        }
+
+        /* Horizontal Step Progress Bar */
+        .wizard-steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto 30px auto;
+            position: relative;
+            max-width: 600px;
+        }
+
+        .wizard-steps-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .step-dot {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #64748b;
+            position: relative;
+            z-index: 2;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step-dot.active {
+            background: #020617;
+            border-color: #06b6d4;
+            color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4), inset 0 0 8px rgba(6, 182, 212, 0.2);
+            transform: scale(1.1);
+        }
+
+        .step-dot.completed {
+            background: linear-gradient(135deg, #06b6d4 0%, #a855f7 100%);
+            border-color: #a855f7;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        .wizard-step-pane {
+            display: none;
+            min-height: 320px;
+        }
+
+        .wizard-step-pane.active {
+            display: block;
+            animation: paneSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes paneSlideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        /* Frosted Form styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 18px;
+            color: #f8fafc;
+            font-size: 0.95rem;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .form-control::placeholder {
+            color: #475569;
+        }
+
+        /* Columns layout for Credentials & Configs */
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Dynamic Roster List viewport styles */
+        .crew-roster-viewport {
+            max-height: 330px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 5px;
+        }
+
+        .child-roster-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 12px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: rowFadeIn 0.3s ease forwards;
+        }
+
+        @keyframes rowFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .btn-row-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-row-delete:hover {
+            background: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Toggle Button Dials & Slider Style */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 15px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .switch-btn {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch-btn input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #94a3b8;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: rgba(6, 182, 212, 0.2);
+            border-color: #06b6d4;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+            background-color: #06b6d4;
+            box-shadow: 0 0 8px #06b6d4;
+        }
+
+        /* HSL Glowing Radio Pills */
+        .toggle-pills {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr 1.2fr;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .pill-option {
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            color: #64748b;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .pill-option:hover {
+            color: #cbd5e1;
+        }
+
+        .pill-option.active {
+            background: rgba(6, 182, 212, 0.12);
+            border-color: rgba(6, 182, 212, 0.35);
+            color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+
+        /* Buttons Navigation */
+        .btn-wizard-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-action {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 14px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.2);
+            flex-grow: 1.5;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(6, 182, 212, 0.35), 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+            flex-grow: 1;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px dashed rgba(6, 182, 212, 0.4);
+            color: #06b6d4;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(6, 182, 212, 0.06);
+            border-style: solid;
+            border-color: #06b6d4;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.15);
+        }
+
+        /* Dynamic Seeding Breakdown Panel styles */
+        .seeding-bullet {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 10px;
+        }
+        .seeding-bullet:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .seeding-bullet strong {
+            color: #f1f5f9;
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .seeding-bullet span {
+            opacity: 0.65;
+            font-size: 0.78rem;
+            display: block;
+            line-height: 1.35;
+        }
+
+        /* Custom Scrollbar */
+        .crew-roster-viewport::-webkit-scrollbar {
+            width: 6px;
+        }
+        .crew-roster-viewport::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .crew-roster-viewport::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .crew-roster-viewport::-webkit-scrollbar-thumb:hover {
+            background: rgba(6, 182, 212, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-wizard-box">
+        <div class="wizard-header">
+            <h1><i class="fa-solid fa-satellite-dish"></i> SYSTEM SETUP MATRIX</h1>
+            <p>Welcome! Initialize parent credentials, register crew profiles, and load custom widgets.</p>
+        </div>
+
+        <div class="wizard-steps-indicator">
+            <div class="step-dot active" id="dot-1">1</div>
+            <div class="step-dot" id="dot-2">2</div>
+            <div class="step-dot" id="dot-3">3</div>
+            <div class="step-dot" id="dot-4">4</div>
+        </div>
+
+        <form id="wizard-master-form" onsubmit="finishWizard(event)">
+            <!-- Step 1: Parent Credentials -->
+            <div class="wizard-step-pane active" id="step-1">
+                <div class="step-title"><i class="fa-solid fa-user-shield" style="color:#06b6d4;"></i> Step 1: Parent Security Credentials</div>
+                <div class="step-desc">Establish secure access keys. The credentials configured here lock the Parent Admin control board to prevent children from altering points and chores.</div>
+                
+                <div class="split-grid">
+                    <div class="form-group">
+                        <label>Parent Username</label>
+                        <input type="text" class="form-control" id="parent-username" value="parent" placeholder="parent" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Security Password</label>
+                        <input type="password" class="form-control" id="parent-password" placeholder="••••••••" minlength="4" required>
+                    </div>
+                </div>
+
+                <div class="btn-wizard-nav">
+                    <div></div> <!-- Spacer -->
+                    <button type="button" class="btn-action btn-primary" onclick="nextStep(2)">Configure Crew Roster <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Crew Roster Ingestion -->
+            <div class="wizard-step-pane" id="step-2">
+                <div class="step-title"><i class="fa-solid fa-users" style="color:#06b6d4;"></i> Step 2: Crew Roster Ingestion</div>
+                <div class="step-desc">Register child dashboard profiles. Fill in the name, age, and theme preset. You can choose whether to automatically seed baseline chores for their age range.</div>
+                
+                <div class="split-grid" style="grid-template-columns: 1fr 1.25fr; gap: 30px; align-items: start;">
+                    
+                    <!-- Left Column: Explanation of Seeding -->
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.04); padding: 20px; border-radius: 16px; font-size: 0.85rem; line-height: 1.45; color: #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                        <h4 style="margin-top: 0; margin-bottom: 12px; color: #06b6d4; font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px;"><i class="fa-solid fa-seedling"></i> WHAT THE SYSTEM SEEDS DYNAMICALLY</h4>
+                        <p style="margin-bottom: 16px; opacity: 0.8; font-size: 0.8rem; line-height: 1.4;">Toggling <strong>Seed Chores?</strong> pre-schedules standard routines based on your child's age range:</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 14px;">
+                            <div class="seeding-bullet">
+                                <strong>👶 Toddlers (Age 4 & Under — e.g. Noelle)</strong>
+                                <span>Brush Teeth (Morning & Night) 🪥, Pick up Toys 🧸 (2 pts each)</span>
+                            </div>
+                            <div class="seeding-bullet">
+                                <strong>👦 Young Kids (Ages 5 to 8 — e.g. Axel)</strong>
+                                <span>Brush Teeth 🪥, Pick up Toys 🧸, Shower 🚿, Put away Shoes 👟 (5 pts each)</span>
+                            </div>
+                            <div class="seeding-bullet">
+                                <strong>🧑 Youths (Ages 9 to 12 — e.g. Cayden)</strong>
+                                <span>Brush Teeth 🪥 (5 pts), Shower 🚿 (5 pts), Make Bed 🛏️ (5 pts), Do Homework 📚 (10 pts), Clean Room 🧹 (15 pts)</span>
+                            </div>
+                            <div class="seeding-bullet">
+                                <strong>🧑‍🚀 Teenagers (Ages 13 & Up)</strong>
+                                <span>Brush Teeth 🪥 (5 pts), Shower 🚿 (5 pts), Make Bed 🛏️ (5 pts), Deep Clean Room 🧹 (25 pts), Empty/Load Dishwasher 🍽️ (10 pts)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Interactive Crew List -->
+                    <div>
+                        <div class="crew-roster-viewport" id="crew-roster-viewport">
+                            <!-- Cloned child rows inject here dynamically -->
+                        </div>
+
+                        <button type="button" class="btn-action btn-outline" onclick="addNewChildRow()">
+                            <i class="fa-solid fa-plus-circle"></i> Add Another Child Profile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="btn-wizard-nav" style="margin-top: 25px;">
+                    <button type="button" class="btn-action btn-secondary" onclick="prevStep(1)"><i class="fa-solid fa-chevron-left"></i> Credentials</button>
+                    <button type="button" class="btn-action btn-primary" onclick="nextStep(3)">Notification Setup <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Email Notifications -->
+            <div class="wizard-step-pane" id="step-3">
+                <div class="step-title"><i class="fa-solid fa-envelope" style="color:#06b6d4;"></i> Step 3: Email Notification Alerts</div>
+                <div class="step-desc">Enable automated household reports. Toggling this lets the engine send daily reminders and chore submissions straight to parents. You can skip this step and configure notifications later in Admin.</div>
+
+                <div class="switch-container">
+                    <div>
+                        <span style="font-family:'Outfit', sans-serif; font-weight:600; font-size:0.95rem; color:#f1f5f9; display:block;">Enable Email Notifications</span>
+                        <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Automates reminders and parent alert metrics via secure SMTP channels.</span>
+                    </div>
+                    <label class="switch-btn">
+                        <input type="checkbox" id="smtp-enabled-chk" onchange="toggleSmtpFields()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Sliding SMTP Fields and Instructions -->
+                <div id="smtp-config-section" style="display:none; animation: paneSlideIn 0.3s ease forwards;">
+                    <div style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15); padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">
+                        <h4 style="margin: 0 0 8px 0; color: #06b6d4; font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-circle-question"></i> How to setup Gmail App Passwords:</h4>
+                        1. Visit your secure <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #c084fc; text-decoration: underline; font-weight: bold;">Google App Passwords Portal <i class="fa-solid fa-up-right-from-square" style="font-size: 0.75rem;"></i></a>.<br>
+                        2. Under "Select app", choose <strong>Other (Custom name)</strong> and label it "Family Dashboard".<br>
+                        3. Click <strong>Generate</strong>. Copy the 16-character passcode and paste it into the **App Password** input field below.
+                    </div>
+
+                    <div class="split-grid">
+                        <div class="form-group">
+                            <label>Gmail SMTP User</label>
+                            <input type="email" class="form-control" id="smtp-username" placeholder="yourfamily@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Google App Password</label>
+                            <input type="password" class="form-control" id="smtp-password" placeholder="•••• •••• •••• ••••">
+                        </div>
+                    </div>
+                    <div class="split-grid">
+                        <div class="form-group">
+                            <label>From Address</label>
+                            <input type="email" class="form-control" id="smtp-from" placeholder="yourfamily@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Recipient Address <span style="text-transform: none; color: #06b6d4; font-weight: normal;">(Optional)</span></label>
+                            <input type="text" class="form-control" id="smtp-to" placeholder="parents@gmail.com, backup@gmail.com">
+                            <span style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px; display: block;">Specify additional parents or others who should also be notified of events (separate with commas).</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-wizard-nav">
+                    <button type="button" class="btn-action btn-secondary" onclick="prevStep(2)"><i class="fa-solid fa-chevron-left"></i> Roster</button>
+                    <button type="button" class="btn-action btn-primary" onclick="nextStep(4)">System Integrations <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 4: System Integrations (Weather, Calendar, Photos, Solar) -->
+            <div class="wizard-step-pane" id="step-4">
+                <div class="step-title"><i class="fa-solid fa-circle-nodes" style="color:#c084fc;"></i> Step 4: System Integrations</div>
+                <div class="step-desc">Configure Stafford VA environmental integrations. Set up local weather updates, Google Calendars, screensavers, and home solar widgets.</div>
+
+                <!-- 1. WEATHER INTEGRATION (FIRST) -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 18px; border-radius: 14px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 12px 0; font-family:'Outfit', sans-serif; color:#06b6d4;"><i class="fa-solid fa-cloud-sun"></i> 1. Live Weather Widget Location</h4>
+                    <p style="font-size:0.8rem; color:#94a3b8; margin-top:0; margin-bottom:12px; line-height:1.4;">Configure coordinates to target the animated 3D weather dials on the main Kiosk screen.</p>
+                    <div style="display:grid; grid-template-columns: 1.5fr 1fr 1fr; gap:12px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Location Display Label</label>
+                            <input type="text" class="form-control" id="weather-loc-name" value="Stafford, VA 22554" placeholder="e.g. Stafford, VA 22554">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Latitude Coordinates</label>
+                            <input type="text" class="form-control" id="weather-lat" value="38.4232" placeholder="e.g. 38.4232">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Longitude Coordinates</label>
+                            <input type="text" class="form-control" id="weather-lon" value="-77.4080" placeholder="e.g. -77.4080">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. GOOGLE CALENDAR FEED (SECOND) -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 18px; border-radius: 14px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 12px 0; font-family:'Outfit', sans-serif; color:#06b6d4;"><i class="fa-solid fa-calendar-days"></i> 2. Family Calendar Schedule</h4>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Google iCal Calendar Feed Link (Optional)</label>
+                        <input type="url" class="form-control" id="ical-url" placeholder="https://calendar.google.com/calendar/ical/...">
+                    </div>
+                </div>
+
+                <!-- 3. PHOTO stream COLLAGE (THIRD) -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 18px; border-radius: 14px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 12px 0; font-family:'Outfit', sans-serif; color:#06b6d4;"><i class="fa-solid fa-images"></i> 3. Kiosk Screensaver Collage Source</h4>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Select Slideshow Collage Mode</label>
+                        <!-- HSL Sliding Radio Pills -->
+                        <div class="toggle-pills" id="photo-source-pills" style="margin-bottom:12px;">
+                            <div class="pill-option active" data-value="default" onclick="selectPhotoSource('default')">
+                                <i class="fa-solid fa-images"></i> Landscapes Feed
+                            </div>
+                            <div class="pill-option" data-value="google" onclick="selectPhotoSource('google')">
+                                <i class="fa-solid fa-link"></i> Google Shared Album
+                            </div>
+                            <div class="pill-option" data-value="manual" onclick="selectPhotoSource('manual')">
+                                <i class="fa-solid fa-folder-open"></i> Parent Uploads Folder
+                            </div>
+                        </div>
+                        <input type="hidden" id="photo-source-mode-val" value="default">
+                    </div>
+
+                    <!-- Dynamic Description Blocks -->
+                    <div id="photo-desc-default" class="step-desc" style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 10px; margin-bottom: 0; font-size:0.8rem; line-height:1.45;">
+                        <i class="fa-solid fa-circle-info" style="color:#06b6d4;"></i> <strong>Landscapes Feed:</strong> Displays a breathtaking pre-curated collage of built-in 4K nature and landscape scenery automatically. Zero configuration required.
+                    </div>
+                    
+                    <div id="photo-desc-google" class="step-desc" style="display:none; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 10px; margin-bottom: 0; font-size:0.8rem; line-height:1.45;">
+                        <i class="fa-solid fa-circle-info" style="color:#06b6d4;"></i> <strong>Google Shared Album:</strong> Links directly to a shared Google Photos Album public URL. Our background engine automatically syncs and streams photos.
+                        <div style="margin-top: 10px; font-size: 0.76rem; color: #a855f7; line-height:1.4;">
+                            <strong>How to get your Google Shared Album link:</strong><br>
+                            1. Visit the secure <a href="https://photos.google.com/shared" target="_blank" style="color: #06b6d4; text-decoration: underline; font-weight: bold;">Google Photos Shared Portal <i class="fa-solid fa-up-right-from-square" style="font-size: 0.7rem;"></i></a>.<br>
+                            2. Open your shared album, click <strong>Share <i class="fa-solid fa-share-nodes"></i></strong> at the top right, and click <strong>Create link</strong>.<br>
+                            3. Copy that link and paste it into the field below.
+                        </div>
+                        <div class="form-group" style="margin-top: 10px; margin-bottom: 0;">
+                            <input type="url" class="form-control" id="google-photos-album-url" placeholder="https://photos.app.goo.gl/...">
+                        </div>
+                    </div>
+                    
+                    <div id="photo-desc-manual" class="step-desc" style="display:none; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 10px; margin-bottom: 0; font-size:0.8rem; line-height:1.45;">
+                        <i class="fa-solid fa-circle-info" style="color:#06b6d4;"></i> <strong>Parent Uploads Folder:</strong> Indexes custom family photos stored locally in the server's local folder. You can upload photos instantly right here during setup, or later in the Parent Admin dashboard.
+                        
+                        <!-- Interactive Frosted Drag-and-Drop Photo Uploader -->
+                        <div id="welcome-photo-uploader" style="margin-top: 15px; border: 2px dashed rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.03); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="triggerFileSelect()">
+                            <div style="font-size: 1.8rem; color: #06b6d4; margin-bottom: 8px;">
+                                <i class="fa-solid fa-cloud-arrow-up animate-pulse" style="animation: pulse 2s infinite;"></i>
+                            </div>
+                            <span style="font-family: 'Outfit', sans-serif; font-weight: 600; color: #f1f5f9; display: block; font-size: 0.85rem;">Click to Upload Custom Family Photos</span>
+                            <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 4px;">Supports JPG, PNG, WEBP (multiple files allowed)</span>
+                            <input type="file" id="welcome-file-input" multiple accept="image/*" style="display: none;" onchange="uploadWelcomePhotos(this.files)">
+                            <div id="welcome-upload-status" style="margin-top: 10px; font-size: 0.75rem; font-weight: bold; color: #a855f7; display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. ENPHASE SOLAR TRACKER (LAST, OPTIONAL WITH SLIDE TOGGLE) -->
+                <div class="switch-container">
+                    <div>
+                        <span style="font-family:'Outfit', sans-serif; font-weight:600; font-size:0.95rem; color:#f1f5f9; display:block;">Enphase Solar Tracker Widget</span>
+                        <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Enable to track home solar curve analytics next to weather dials.</span>
+                    </div>
+                    <label class="switch-btn">
+                        <input type="checkbox" id="solar-enabled-chk" onchange="toggleSolarFields()" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Solar detail configs revealed dynamically -->
+                <div id="solar-config-fields" style="margin-bottom: 25px; display: block; animation: paneSlideIn 0.3s ease forwards;">
+                    <!-- Enphase Entrez Portal Instructions -->
+                    <div style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.15); padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">
+                        <h4 style="margin: 0 0 8px 0; color: #c084fc; font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-circle-question"></i> How to retrieve Enphase Gateway details:</h4>
+                        Our solar tracking daemon harvests production telemetry directly from your local Envoy or IQ Gateway. Complete setup with your Enphase credentials:<br>
+                        1. <strong>Enphase Credentials</strong>: Enter your standard login credentials for your Enphase account.<br>
+                        2. <strong>Enphase Entrez Portal</strong>: Visit the secure <a href="https://entrez.enphaseenergy.com/" target="_blank" style="color: #06b6d4; text-decoration: underline; font-weight: bold;">Enphase Entrez Portal <i class="fa-solid fa-up-right-from-square" style="font-size: 0.75rem;"></i></a> website.<br>
+                        3. <strong>Find Gateway Details</strong>: Log in with your credentials. On the portal page:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&bull; <strong>Gateway System Name</strong>: Locate the system selection input labeled <strong>System</strong>. The autocomplete suggestion lists your system name (e.g. <code>Family-Solar-Home</code>).<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&bull; <strong>Gateway Serial Number</strong>: Select your system, and the <strong>Gateway</strong> dropdown below will populate with your 12-digit physical gateway serial number (e.g. <code>122238045678</code>). Copy both values into the fields below.
+                    </div>
+
+                    <div class="split-grid" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Enphase Username</label>
+                            <input type="email" class="form-control" id="enphase-username" placeholder="solar-user@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Enphase Password</label>
+                            <input type="password" class="form-control" id="enphase-password" placeholder="••••••••">
+                        </div>
+                    </div>
+                    
+                    <div class="split-grid">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Gateway System Name</label>
+                            <input type="text" class="form-control" id="enphase-system-name" placeholder="e.g. Family-Solar-Home">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Gateway Serial Number</label>
+                            <input type="text" class="form-control" id="enphase-serial-num" placeholder="e.g. 122238045678">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-wizard-nav">
+                    <button type="button" class="btn-action btn-secondary" onclick="prevStep(3)"><i class="fa-solid fa-chevron-left"></i> Notifications</button>
+                    <button type="submit" class="btn-action btn-primary pulse-launch-btn"><i class="fa-solid fa-rocket"></i> Launch Core Matrix</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="version-telemetry-tag" style="text-align: center; font-size: 0.75rem; font-family: 'Orbitron', monospace; color: #475569; margin-top: 30px; letter-spacing: 1px;">
+            Family Command Center <span id="version-number">v3.5.4</span> Blueprint
+        </div>
+    </div>
+
+    <script>
+        // Core starting profiles pre-populated in Roster
+        const defaultChildren = [
+            { name: "Axel", age: 8, theme: "gamer", font: "fredoka", seed_chores: true },
+            { name: "Cayden", age: 12, theme: "mecha", font: "fredoka", seed_chores: true },
+            { name: "Noelle", age: 4, theme: "princess", font: "fredoka", seed_chores: true }
+        ];
+
+        // Boot starting crew profiles
+        window.addEventListener('DOMContentLoaded', () => {
+            defaultChildren.forEach(child => addNewChildRow(child));
+        });
+
+        // Expandable Child Profile row cloner (Compact layout for two-column roster)
+        function addNewChildRow(childData = null) {
+            const container = document.getElementById('crew-roster-viewport');
+            const rowIndex = container.children.length;
+            
+            const row = document.createElement('div');
+            row.className = 'child-roster-row';
+            row.id = `child-row-${rowIndex}`;
+            
+            const nameVal = childData ? childData.name : '';
+            const ageVal = childData ? childData.age : '';
+            const themeVal = childData ? childData.theme : 'gamer';
+            const fontVal = childData ? childData.font : 'fredoka';
+            const seedChoresChecked = childData ? (childData.seed_chores ? 'checked' : '') : 'checked';
+            
+            row.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Crew Name</label>
+                        <input type="text" class="form-control child-name" placeholder="Name" value="${nameVal}" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Age</label>
+                        <input type="number" class="form-control child-age" placeholder="Age" min="1" max="18" value="${ageVal}" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Theme</label>
+                        <select class="form-control child-theme">
+                            <option value="dinosaur" ${themeVal === 'dinosaur' ? 'selected' : ''}>🦕 Dinosaur</option>
+                            <option value="gamer" ${themeVal === 'gamer' ? 'selected' : ''}>🎮 Gamer</option>
+                            <option value="princess" ${themeVal === 'princess' ? 'selected' : ''}>👑 Princess</option>
+                            <option value="mecha" ${themeVal === 'mecha' ? 'selected' : ''}>🤖 Mecha</option>
+                            <option value="roblox" ${themeVal === 'roblox' ? 'selected' : ''}>🧱 Roblox</option>
+                            <option value="fortnite" ${themeVal === 'fortnite' ? 'selected' : ''}>🏆 Fortnite</option>
+                            <option value="teen-dark" ${themeVal === 'teen-dark' ? 'selected' : ''}>🕶️ Teen Dark</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Roster Font</label>
+                        <select class="form-control child-font">
+                            <option value="fredoka" ${fontVal === 'fredoka' ? 'selected' : ''}>Fredoka</option>
+                            <option value="quicksand" ${fontVal === 'quicksand' ? 'selected' : ''}>Quicksand</option>
+                            <option value="orbitron" ${fontVal === 'orbitron' ? 'selected' : ''}>Orbitron</option>
+                            <option value="outfit" ${fontVal === 'outfit' ? 'selected' : ''}>Outfit</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.15); padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03);">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 0.8rem; font-weight: 600; color: #f1f5f9;">Seed Age-Appropriate Chores</span>
+                        <span style="font-size: 0.7rem; color: #94a3b8;">Populates schedule with daily basic habits</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <label class="switch-btn">
+                            <input type="checkbox" class="child-seed-chores" ${seedChoresChecked}>
+                            <span class="slider"></span>
+                        </label>
+                        <button type="button" class="btn-row-delete" onclick="deleteChildRow('${row.id}')" aria-label="Delete profile" style="width: 32px; height: 32px; border-radius: 6px;">
+                            <i class="fa-solid fa-trash-can" style="font-size: 0.85rem;"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        // Delete profile row
+        function deleteChildRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.style.animation = 'rowFadeIn 0.2s ease reverse';
+                setTimeout(() => {
+                    row.remove();
+                }, 200);
+            }
+        }
+
+        // Horizontal panel progress transitions
+        function nextStep(stepNum) {
+            // Validations
+            if (stepNum === 2) {
+                const username = document.getElementById('parent-username').value.trim();
+                const pass = document.getElementById('parent-password').value;
+                if (!username || !pass || pass.length < 4) {
+                    alert('Please provide a parent username and password (min 4 characters).');
+                    return;
+                }
+            }
+            if (stepNum === 3) {
+                const childRows = document.querySelectorAll('.child-roster-row');
+                if (childRows.length === 0) {
+                    alert('Please configure at least one child crew profile to proceed!');
+                    return;
+                }
+                
+                // Validate names/ages
+                let valid = true;
+                childRows.forEach(row => {
+                    const name = row.querySelector('.child-name').value.trim();
+                    const age = row.querySelector('.child-age').value;
+                    if (!name || !age) valid = false;
+                });
+                if (!valid) {
+                    alert('Please enter a name and age for all registered children.');
+                    return;
+                }
+            }
+            if (stepNum === 4) {
+                const smtpEnabled = document.getElementById('smtp-enabled-chk').checked;
+                if (smtpEnabled) {
+                    const user = document.getElementById('smtp-username').value.trim();
+                    const pass = document.getElementById('smtp-password').value;
+                    if (!user || !pass) {
+                        alert('Please fill out the Gmail SMTP credentials or disable Email Notifications to proceed.');
+                        return;
+                    }
+                }
+            }
+
+            // Sync indicators
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index + 1 < stepNum) {
+                    dot.classList.add('completed');
+                } else if (index + 1 === stepNum) {
+                    dot.classList.add('active');
+                    dot.classList.remove('completed');
+                } else {
+                    dot.classList.remove('completed');
+                }
+            });
+
+            // Pane swaps
+            document.querySelectorAll('.wizard-step-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(`step-${stepNum}`).classList.add('active');
+        }
+
+        // Previous step
+        function prevStep(stepNum) {
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index + 1 < stepNum) {
+                    dot.classList.add('completed');
+                } else if (index + 1 === stepNum) {
+                    dot.classList.add('active');
+                    dot.classList.remove('completed');
+                } else {
+                    dot.classList.remove('completed');
+                }
+            });
+
+            document.querySelectorAll('.wizard-step-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(`step-${stepNum}`).classList.add('active');
+        }
+
+        // Toggle SMTP configuration sections
+        function toggleSmtpFields() {
+            const enabled = document.getElementById('smtp-enabled-chk').checked;
+            document.getElementById('smtp-config-section').style.display = enabled ? 'block' : 'none';
+        }
+
+        // Toggle Enphase solar fields
+        function toggleSolarFields() {
+            const enabled = document.getElementById('solar-enabled-chk').checked;
+            document.getElementById('solar-config-fields').style.display = enabled ? 'block' : 'none';
+        }
+
+        // Select collage stream modes
+        function selectPhotoSource(mode) {
+            document.querySelectorAll('#photo-source-pills .pill-option').forEach(p => p.classList.remove('active'));
+            const targetPill = document.querySelector(`#photo-source-pills .pill-option[data-value="${mode}"]`);
+            if (targetPill) targetPill.classList.add('active');
+            
+            document.getElementById('photo-source-mode-val').value = mode;
+
+            // Google photos album url revealed dynamically
+            const configGroup = document.getElementById('google-photos-config-group');
+            if (configGroup) {
+                configGroup.style.display = mode === 'google' ? 'block' : 'none';
+            }
+            document.getElementById('photo-desc-default').style.display = mode === 'default' ? 'block' : 'none';
+            document.getElementById('photo-desc-google').style.display = mode === 'google' ? 'block' : 'none';
+            document.getElementById('photo-desc-manual').style.display = mode === 'manual' ? 'block' : 'none';
+        }
+
+        // Direct photo upload zones trigger inside Wizard Onboarding
+        function triggerFileSelect() {
+            document.getElementById('welcome-file-input').click();
+        }
+
+        async function uploadWelcomePhotos(files) {
+            if (!files || files.length === 0) return;
+            
+            const statusDiv = document.getElementById('welcome-upload-status');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading ${files.length} photo(s) directly to server folder...`;
+            statusDiv.style.color = '#06b6d4';
+            
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('photos[]', files[i]);
+            }
+            
+            try {
+                const response = await fetch('/api/admin/photos/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `<i class="fa-solid fa-circle-check"></i> Successfully uploaded ${files.length} custom photo(s)!`;
+                    statusDiv.style.color = '#4ade80';
+                } else {
+                    const err = await response.json();
+                    statusDiv.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Upload failed: ${err.message || 'Error'}`;
+                    statusDiv.style.color = '#ef4444';
+                }
+            } catch (e) {
+                console.error(e);
+                statusDiv.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Connection failure.`;
+                statusDiv.style.color = '#ef4444';
+            }
+        }
+
+        // Finish Wizard and launch matrix POST
+        async function finishWizard(e) {
+            e.preventDefault();
+
+            const parent_username = document.getElementById('parent-username').value.trim();
+            const parent_password = document.getElementById('parent-password').value;
+
+            // Ingest crew roster from DOM inputs
+            const crew = [];
+            const childRows = document.querySelectorAll('.child-roster-row');
+            childRows.forEach(row => {
+                const name = row.querySelector('.child-name').value.trim();
+                const age = parseInt(row.querySelector('.child-age').value);
+                const theme = row.querySelector('.child-theme').value;
+                const font = row.querySelector('.child-font').value;
+                const seed_chores = row.querySelector('.child-seed-chores').checked;
+                if (name && age) {
+                    crew.push({ name, age, theme, font, seed_chores });
+                }
+            });
+
+            const ical_feed_url = document.getElementById('ical-url').value.trim();
+
+            const smtpEnabled = document.getElementById('smtp-enabled-chk').checked;
+            const smtp_username = smtpEnabled ? document.getElementById('smtp-username').value.trim() : '';
+            const smtp_password = smtpEnabled ? document.getElementById('smtp-password').value : '';
+            const smtp_from_email = smtpEnabled ? document.getElementById('smtp-from').value.trim() : '';
+            const smtp_to_email = smtpEnabled ? document.getElementById('smtp-to').value.trim() : '';
+
+            const photo_source_mode = document.getElementById('photo-source-mode-val').value;
+            const google_photos_album_url = document.getElementById('google-photos-album-url').value.trim();
+            const solar_enabled = document.getElementById('solar-enabled-chk').checked;
+
+            const enphase_username = solar_enabled ? document.getElementById('enphase-username').value.trim() : '';
+            const enphase_password = solar_enabled ? document.getElementById('enphase-password').value : '';
+            const enphase_system_name = solar_enabled ? document.getElementById('enphase-system-name').value.trim() : '';
+            const enphase_serial_num = solar_enabled ? document.getElementById('enphase-serial-num').value.trim() : '';
+
+            // Weather integrations
+            const weather_location_name = document.getElementById('weather-loc-name').value.trim();
+            const weather_latitude = document.getElementById('weather-lat').value.trim();
+            const weather_longitude = document.getElementById('weather-lon').value.trim();
+
+            const payload = {
+                parent_username,
+                parent_password,
+                crew,
+                ical_feed_url,
+                photo_source_mode,
+                google_photos_album_url,
+                solar_enabled,
+                enphase_username,
+                enphase_password: enphase_password || "••••••••",
+                enphase_system_name,
+                enphase_serial_num,
+                smtp_server: smtpEnabled ? 'smtp.gmail.com' : '',
+                smtp_port: smtpEnabled ? '587' : '587',
+                smtp_username,
+                smtp_password: smtp_password || "••••••••",
+                smtp_from_email,
+                smtp_to_email,
+                weather_location_name,
+                weather_latitude,
+                weather_longitude
+            };
+
+            try {
+                const response = await fetch('/api/system/initialize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('Command Center initialized successfully! Redirecting straight to root dashboard.');
+                    window.location.href = '/';
+                } else {
+                    const err = await response.json();
+                    alert('Initialization failed: ' + (err.message || 'Unknown network error.'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Establishment of core channels failed. Verify local node execution.');
+            }
+        }
+    </script>
+    <script>
+        fetch('/api/version')
+            .then(res => res.json())
+            .then(data => {
+                const el = document.getElementById('version-number');
+                if (el) el.textContent = data.version;
+            })
+            .catch(err => console.warn("Could not fetch version", err));
+    </script>
+</body>
+</html>

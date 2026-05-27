@@ -1,0 +1,14 @@
+# Family Command Center Android Kiosk App Placement
+===================================================
+
+Place your compiled `FamilyDashboard.apk` binary file in this directory:
+C:\Users\senyo\OneDrive\Documents\VS code writing\Family dashboard project\static\apps\FamilyDashboard.apk
+
+The Flask server is configured to serve this file securely over the network via:
+- Endpoint: http://localhost:8080/download/apk
+- MIME Type: application/vnd.android.package-archive (prevents corruption)
+- Presentation: Secure binary download attachment
+
+To update the app distributed to devices, simply compile your new build with Buildozer:
+`buildozer -v android debug`
+And copy/overwrite the resulting `.apk` file here, renaming it to `FamilyDashboard.apk`.

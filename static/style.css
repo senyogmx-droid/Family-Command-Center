@@ -1,0 +1,1802 @@
+/* -------------------------------------------------------------
+ * CORE DESIGN SYSTEM - FAMILY COMMAND CENTER
+ * Premium Glassmorphism UI & Hardware-Accelerated 3D Animations
+ * Designed for continuous 24/7 Raspberry Pi Browser Kiosk Mode
+ * ------------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Color Palette */
+    --bg-gradient: radial-gradient(circle at center, var(--body-tint, #131926) 0%, #07090e 100%);
+    --panel-bg: rgba(25, 33, 50, 0.35);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --accent-blue: #38bdf8;
+    --accent-green: #4ade80;
+    --accent-yellow: #facc15;
+    --accent-orange: #fb923c;
+    --accent-purple: #c084fc;
+    --accent-red: #f87171;
+    
+    /* Fonts */
+    --font-heading: 'Outfit', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden !important; /* Eliminate vertical layout drift completely */
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+}
+
+/* -------------------------------------------------------------
+ * DASHBOARD GRID LAYOUT
+ * ------------------------------------------------------------- */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr; /* Left column 20% wider than right */
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+    max-width: 1920px;
+    max-height: 1080px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevents spill on zoom */
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    min-width: 0; /* Critical: allows column to shrink below content width */
+    overflow-y: auto;
+}
+
+.right-column {
+    height: 100%;
+    min-width: 0; /* Prevents the slideshow from forcing a larger width */
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--panel-glow);
+    background: #000;
+}
+
+/* Force standard widget cards to scale spacing and margins relative to container dimensions */
+.widget.card, .widget {
+    margin-bottom: 0 !important; /* Suppress fixed pixel leaks */
+    padding: 1.5vh 1.5vw !important;
+}
+
+/* -------------------------------------------------------------
+ * PREMIUM GLASSMORPHISM WIDGETS
+ * ------------------------------------------------------------- */
+.widget {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    box-shadow: var(--panel-glow);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease;
+}
+
+.widget:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.widget h3 {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+/* -------------------------------------------------------------
+ * WIDGET A: FAMILY SCHEDULE / CALENDAR
+ * ------------------------------------------------------------- */
+#calendar-widget h3 i {
+    color: var(--accent-purple);
+}
+
+.calendar-container {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 16px;
+    height: calc(100% - 30px);
+}
+
+.calendar-details {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 14px;
+    padding: 12px 16px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    max-height: 100%;
+}
+
+.calendar-details::-webkit-scrollbar {
+    width: 4px;
+}
+.calendar-details::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.select-prompt {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 40px;
+    font-style: italic;
+}
+
+.detail-day-header {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent-purple);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+}
+
+.detail-event-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 3px solid var(--accent-purple);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    transition: background 0.2s ease;
+}
+
+.detail-event-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.detail-event-time {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-yellow);
+    margin-bottom: 2px;
+}
+
+.detail-event-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.detail-event-loc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.calendar-right-side {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.calendar-day-labels {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+    flex-grow: 1;
+}
+
+.calendar-day {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 4px;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.calendar-day.today {
+    background: rgba(192, 132, 252, 0.12);
+    border: 1.5px solid var(--accent-purple);
+    box-shadow: 0 0 10px rgba(192, 132, 252, 0.2);
+}
+
+.calendar-day.selected {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-primary);
+}
+
+.calendar-day-num {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.calendar-day.today .calendar-day-num {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.calendar-event-indicator {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    min-height: 4px;
+}
+
+.calendar-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--accent-purple);
+    box-shadow: 0 0 4px var(--accent-purple);
+}
+
+/* -------------------------------------------------------------
+ * WIDGET B: SOLAR & CLOCK 50/50 CARD
+ * ------------------------------------------------------------- */
+.solar-clock-card {
+    padding: 0;
+}
+
+.solar-clock-body {
+    display: grid;
+    grid-template-columns: 1fr 1px 1.05fr;
+    height: 100%;
+    align-items: center;
+}
+
+.solar-clock-body.solar-disabled {
+    grid-template-columns: 1fr !important;
+}
+
+.solar-clock-body.solar-disabled .solar-half {
+    display: none !important;
+}
+
+.solar-clock-body.solar-disabled .inner-divider {
+    display: none !important;
+}
+
+.solar-clock-body.solar-disabled .clock-half {
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 24px 0 !important;
+}
+
+.solar-clock-body.solar-disabled #clock-digits {
+    font-size: 3.5rem !important;
+}
+
+.solar-half, .clock-half {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.clock-half {
+    align-items: center;
+}
+
+.inner-divider {
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.1) 80%, rgba(255,255,255,0));
+    height: 80%;
+    width: 1px;
+}
+
+.half-header {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+/* Quote fade-in animation for solar replacement */
+.solar-half .half-header,
+.solar-half div[style*="font-size: 1.2rem"] {
+    animation: quoteFadeIn 0.6s ease-out;
+}
+
+@keyframes quoteFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.solar-grid-inline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.solar-column-card {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.4s ease;
+}
+
+.solar-column-card:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.solar-card-header {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.05em;
+}
+
+#solar-card-prod .solar-card-header i {
+    color: var(--accent-green);
+}
+
+#solar-card-cons .solar-card-header i {
+    color: var(--accent-orange);
+}
+
+#solar-card-net .solar-card-header i {
+    transition: color 0.4s ease;
+}
+
+.solar-column-card.status-exporting {
+    border-color: rgba(0, 240, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);
+}
+
+.solar-column-card.status-exporting .solar-card-header i {
+    color: #00f0ff;
+}
+
+.solar-column-card.status-importing {
+    border-color: rgba(248, 113, 113, 0.2);
+    box-shadow: 0 0 10px rgba(248, 113, 113, 0.05);
+}
+
+.solar-column-card.status-importing .solar-card-header i {
+    color: var(--accent-red);
+}
+
+.solar-metric-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.solar-metric-sub:last-child {
+    margin-bottom: 0;
+}
+
+.sub-label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.sub-value {
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.highlight-green {
+    color: var(--accent-green);
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.highlight-orange {
+    color: var(--accent-orange);
+    text-shadow: 0 0 10px rgba(251, 146, 60, 0.3);
+}
+
+.highlight-cyan {
+    color: #00f0ff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
+}
+
+.highlight-crimson {
+    color: var(--accent-red);
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.35);
+}
+
+.digital-clock-display {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+#clock-digits {
+    font-family: var(--font-heading);
+    font-size: 2.7rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    line-height: 1;
+}
+
+#clock-period {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-yellow);
+    letter-spacing: 0.02em;
+}
+
+/* -------------------------------------------------------------
+ * WIDGET C: WEATHER TRACKER
+ * ------------------------------------------------------------- */
+.weather-section {
+    padding: 16px 20px;
+}
+
+.weather-container {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-rows: 1.1fr 0.9fr;
+    gap: 8px 16px;
+    height: 100%;
+}
+
+.weather-main-panel {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.weather-current-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#weather-day-label {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+}
+
+#weather-temp-main {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 4px 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#weather-highlow-main {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+#weather-cond-main {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent-blue);
+    margin-top: 2px;
+}
+
+.weather-animation-viewport {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* 3D Parallax Weather System */
+.weather-3d-wrapper {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    transform-style: preserve-3d;
+    transform: rotateX(12deg) rotateY(-12deg);
+    animation: tilt-3d 8s ease-in-out infinite alternate;
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
+}
+
+.weather-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.layer-sun {
+    transform: translateZ(20px);
+}
+
+.layer-sun-rays {
+    transform: translateZ(10px);
+}
+
+.layer-cloud-front {
+    transform: translateZ(32px);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+.layer-cloud-back {
+    transform: translateZ(-12px);
+    opacity: 0.85;
+}
+
+.layer-rain {
+    transform: translateZ(22px);
+}
+
+.layer-lightning {
+    transform: translateZ(42px);
+}
+
+.layer-snow {
+    transform: translateZ(22px);
+}
+
+.svg-sun {
+    fill: var(--accent-yellow);
+    transform-origin: center;
+    animation: spin-sun-core 25s linear infinite;
+}
+
+.svg-sun-rays {
+    stroke: var(--accent-yellow);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform-origin: center;
+    animation: spin-sun-rays-3d 30s linear infinite;
+}
+
+.svg-cloud {
+    fill: #e2e8f0;
+    transform-origin: center;
+    animation: float-3d 5s ease-in-out infinite;
+}
+
+.svg-cloud-back {
+    fill: #94a3b8;
+    transform-origin: center;
+    animation: float-3d-back 5s ease-in-out infinite;
+}
+
+.svg-rain-drops line {
+    stroke: var(--accent-blue);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    opacity: 0;
+    transform-origin: center;
+    animation: rain-fall-3d 1.4s linear infinite;
+}
+
+.svg-rain-drops line:nth-child(2) {
+    animation-delay: 0.35s;
+}
+
+.svg-rain-drops line:nth-child(3) {
+    animation-delay: 0.7s;
+}
+
+.svg-lightning {
+    fill: var(--accent-yellow);
+    stroke: #fff;
+    stroke-width: 1;
+    transform-origin: center;
+    filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.5));
+    animation: lightning-flash 2.5s infinite;
+}
+
+.forecast-track {
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
+}
+
+.forecast-day-card {
+    background: rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.forecast-day-name {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.forecast-emoji {
+    font-size: 1.1rem;
+}
+
+.forecast-temp-range {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.forecast-high {
+    color: var(--text-primary);
+}
+
+.forecast-low {
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+/* -------------------------------------------------------------
+ * WIDGET D: JOKE OF THE DAY
+ * ------------------------------------------------------------- */
+#joke-widget h3 i {
+    color: var(--accent-orange);
+}
+
+#joke-text {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-secondary);
+    font-style: italic;
+    height: calc(100% - 25px);
+    display: flex;
+    align-items: center;
+    overflow-y: auto;
+}
+
+/* -------------------------------------------------------------
+ * V6 DOUBLE-BUFFER SLIDESHOW ENGINE (WITH RANDOM COLLAGES)
+ * ------------------------------------------------------------- */
+.slideshow-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    perspective: 1200px;
+}
+
+.slideshow-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.slideshow-track.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+/* Dynamic Aspect Ratio Zero-Crop Blurry Background Plate */
+.slide-bg-blur {
+    position: absolute;
+    top: -5%;
+    left: -5%;
+    width: 110%;
+    height: 110%;
+    object-fit: cover;
+    filter: blur(24px) brightness(0.4);
+    z-index: 1;
+    pointer-events: none;
+    transform: scale(1.05);
+}
+
+/* Single Image View */
+.slide-single-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.slide-fg-contain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 2;
+}
+
+/* Collage General Layout Grid */
+.slide-collage-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    z-index: 3;
+    display: none; /* Controlled by JS switcher */
+    gap: 16px;
+    box-sizing: border-box;
+}
+
+.collage-img-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.collage-img-wrapper:hover {
+    transform: scale(1.03) translateZ(15px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+    border-color: rgba(255, 255, 255, 0.22);
+    z-index: 5;
+}
+
+.collage-img-bg-blur {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    object-fit: cover;
+    filter: blur(18px) brightness(0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.collage-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 2;
+    display: block;
+}
+
+/* 1. Duo Collage (2 photos) */
+.slide-collage-view.layout-duo-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+}
+
+/* 2. Split Collage (3 photos) */
+.slide-collage-view.layout-split-3 {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.slide-collage-view.layout-split-3 .wrapper-0 {
+    grid-row: span 2;
+}
+
+/* 3. Grid Collage (4 photos) */
+.slide-collage-view.layout-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+/* 5. Smart Landscape Stack (2 wide landscape photos stacked vertically) */
+.slide-collage-view.layout-landscape-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+/* 4. Polaroid Collage Stack */
+.slide-collage-view.layout-polaroids {
+    display: block; /* Let absolute layout overlay them */
+    position: relative;
+    perspective: 1500px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.slide-collage-view.layout-polaroids .collage-img-wrapper {
+    position: absolute;
+    width: 45%;
+    height: 48%;
+    background: #fcfbf9; /* Heavy Polaroid fine art paper texture color */
+    padding: 12px 12px 36px 12px; /* Top, sides: 12px, bottom: 36px classic board margin */
+    border-radius: 4px; /* Classic flat rigid margins */
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.5s ease;
+}
+
+.slide-collage-view.layout-polaroids .collage-img {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+    object-fit: cover; /* Override back to cover for Polaroids since they are aspect ratio matched */
+}
+
+/* Overlapping stacking order and positional offsets */
+.slide-collage-view.layout-polaroids .wrapper-0 {
+    top: 8%;
+    left: 8%;
+    z-index: 10;
+}
+
+.slide-collage-view.layout-polaroids .wrapper-1 {
+    top: 12%;
+    right: 8%;
+    z-index: 8;
+}
+
+.slide-collage-view.layout-polaroids .wrapper-2 {
+    bottom: 8%;
+    left: 12%;
+    z-index: 9;
+}
+
+.slide-collage-view.layout-polaroids .wrapper-3 {
+    bottom: 10%;
+    right: 12%;
+    z-index: 7;
+}
+
+/* 3D Parallax Polaroid Hover lift */
+.slide-collage-view.layout-polaroids .collage-img-wrapper:hover {
+    z-index: 25;
+    transform: scale(1.08) rotate(0deg) translateZ(40px) !important;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* -------------------------------------------------------------
+ * KEYFRAME HARDWARE-ACCELERATED ANIMATIONS (3D PERSPECTIVE)
+ * ------------------------------------------------------------- */
+@keyframes tilt-3d {
+    0% {
+        transform: rotateX(10deg) rotateY(-14deg) rotateZ(-1deg);
+    }
+    100% {
+        transform: rotateX(-10deg) rotateY(14deg) rotateZ(1deg);
+    }
+}
+
+@keyframes spin-sun-core {
+    0% { transform: translateZ(18px) rotate(0deg); }
+    100% { transform: translateZ(18px) rotate(360deg); }
+}
+
+@keyframes spin-sun-rays-3d {
+    0% { transform: translateZ(10px) rotate(360deg); }
+    100% { transform: translateZ(10px) rotate(0deg); }
+}
+
+@keyframes float-3d {
+    0%, 100% {
+        transform: translateZ(32px) translateY(0px) translateX(0px);
+    }
+    50% {
+        transform: translateZ(36px) translateY(-5px) translateX(2px);
+    }
+}
+
+@keyframes float-3d-back {
+    0%, 100% {
+        transform: translateZ(-12px) translateY(0px) translateX(0px);
+    }
+    50% {
+        transform: translateZ(-15px) translateY(4px) translateX(-1px);
+    }
+}
+
+@keyframes rain-fall-3d {
+    0% {
+        transform: translate3d(0, -12px, 16px);
+        opacity: 0;
+    }
+    30% {
+        opacity: 0.75;
+    }
+    80% {
+        opacity: 0.75;
+    }
+    100% {
+        transform: translate3d(-4px, 24px, 24px);
+        opacity: 0;
+    }
+}
+
+@keyframes lightning-flash {
+    0%, 90%, 94%, 98%, 100% { 
+        opacity: 0; 
+        transform: translateZ(40px) scale(1);
+    }
+    92%, 96% { 
+        opacity: 1; 
+        transform: translateZ(44px) scale(1.08);
+    }
+}
+
+/* -------------------------------------------------------------
+ * WIDGET E: FAMILY LEADERBOARD & STAR OF THE DAY WIDGETS
+ * ------------------------------------------------------------- */
+#leaderboard-widget h3 i {
+    color: var(--accent-yellow);
+}
+
+.leaderboard-flex-body {
+    display: flex;
+    gap: 16px;
+    height: calc(100% - 30px);
+    align-items: center;
+}
+
+.leaderboard-list {
+    flex: 1.6;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    height: 100%;
+    overflow-x: auto;
+    padding: 6px 2px;
+    scrollbar-width: none;  /* Firefox */
+}
+
+.leaderboard-list::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for clean UI */
+}
+
+.leaderboard-card-link {
+    text-decoration: none;
+    display: block;
+}
+
+.leaderboard-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 10px 8px;
+    width: 100px;
+    height: 115px;
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.leaderboard-card-link:hover .leaderboard-card {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--accent-blue);
+    box-shadow: 0 6px 15px rgba(56, 189, 248, 0.2);
+}
+
+.leaderboard-card .avatar-container {
+    font-size: 2rem;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+.leaderboard-card img.avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-blue);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+.leaderboard-card .child-name {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 2px;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.leaderboard-card .child-points {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--accent-green);
+    background: rgba(34, 197, 94, 0.08);
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(34, 197, 94, 0.12);
+    text-shadow: 0 0 3px rgba(34, 197, 94, 0.15);
+    white-space: nowrap;
+}
+
+.star-vertical-divider {
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, rgba(255,255,255,0));
+    width: 1px;
+    height: 80%;
+}
+
+.star-highlight-panel {
+    flex: 0.85;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.01);
+}
+
+.star-icon-container {
+    font-size: 1.8rem;
+    margin-bottom: 2px;
+    animation: star-glow-pulse 3s ease-in-out infinite alternate;
+}
+
+.star-badge-text {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.star-badge-name {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--accent-yellow);
+    text-shadow: 0 0 12px rgba(250, 204, 21, 0.45);
+    margin-top: 1px;
+}
+
+@keyframes star-glow-pulse {
+    0% {
+        transform: scale(0.95) rotate(-5deg);
+        filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.3));
+    }
+    100% {
+        transform: scale(1.1) rotate(5deg);
+        filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.75));
+    }
+}
+
+/* =============================================================
+ * VERSION 2.3 BLUEPRINT EXTENSIONS (STYLES & UTILITIES)
+ * ============================================================= */
+
+/* 1. Time-block Filtration Tabs */
+.time-block-tabs {
+    display: flex;
+    justify-content: space-around;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.time-block-tab {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.time-block-tab:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.time-block-tab.active {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(192, 132, 252, 0.2));
+    border-color: var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+    transform: scale(1.02);
+}
+
+/* 2. Glow / Glassmorphic Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(2, 6, 12, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.spotlight-modal {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+    border: 3px solid #fbbf24;
+    box-shadow: 0 0 50px rgba(251, 191, 36, 0.4), inset 0 0 20px rgba(251, 191, 36, 0.1);
+    border-radius: 32px;
+    max-width: 480px;
+    width: 90%;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    animation: modal-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-top: 5px solid #fbbf24;
+}
+
+@keyframes modal-pop-in {
+    0% {
+        transform: translateY(60px) scale(0.8) rotate(-2deg);
+        opacity: 0;
+    }
+    70% {
+        transform: translateY(-5px) scale(1.03) rotate(1deg);
+    }
+    100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.spotlight-presenter {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.presenter-ring {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    padding: 5px;
+    box-shadow: 0 8px 30px rgba(217, 119, 6, 0.5), 0 0 0 8px rgba(251, 191, 36, 0.15);
+    animation: pulse-ring 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 8px 30px rgba(217, 119, 6, 0.5), 0 0 0 6px rgba(251, 191, 36, 0.15);
+    }
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 35px rgba(217, 119, 6, 0.7), 0 0 0 12px rgba(251, 191, 36, 0.3);
+    }
+}
+
+.dad-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #0f172a;
+    border: 3px solid #ffffff;
+}
+
+.presenter-badge {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 0.85rem;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 2.5px solid #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.spotlight-headline {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fbbf24 !important;
+    text-shadow: 0 0 15px rgba(251, 191, 36, 0.4), 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 15px 0 25px 0;
+    letter-spacing: 0.5px;
+}
+
+.spotlight-message-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 25px 30px;
+    margin: 20px 0;
+    position: relative;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.spotlight-message-box::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent rgba(15, 23, 42, 0.6) transparent;
+}
+
+.quote-icon {
+    font-size: 2.5rem;
+    font-family: Georgia, serif;
+    color: rgba(251, 191, 36, 0.25);
+    position: absolute;
+    line-height: 1;
+}
+
+.quote-icon.left {
+    top: 5px;
+    left: 12px;
+}
+
+.quote-icon.right {
+    bottom: -15px;
+    right: 12px;
+}
+
+.spotlight-body-text {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #f1f5f9;
+    margin: 0;
+    font-style: italic;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.spotlight-reward-splash {
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+    padding: 15px;
+    border-radius: 50%;
+    margin-bottom: 25px;
+    position: relative;
+    animation: reward-pulse 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes reward-pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.06);
+    }
+}
+
+.reward-stars {
+    font-size: 1.6rem;
+    letter-spacing: 6px;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 2px 5px rgba(251, 191, 36, 0.5));
+    animation: stars-shimmer 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes stars-shimmer {
+    0% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 2px 5px rgba(251, 191, 36, 0.5));
+    }
+    100% {
+        transform: translateY(-3px) scale(1.1);
+        filter: drop-shadow(0 4px 12px rgba(251, 191, 36, 0.8));
+    }
+}
+
+.spotlight-bonus {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #fbbf24 !important;
+    text-shadow: 0 0 25px rgba(251, 191, 36, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6);
+    margin: 5px 0;
+    font-family: var(--font-heading);
+    letter-spacing: 1px;
+}
+
+.spotlight-dismiss-btn {
+    width: auto !important;
+    padding: 14px 45px !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%) !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    border-radius: 50px !important;
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.spotlight-dismiss-btn:hover {
+    transform: translateY(-4px) scale(1.05) !important;
+    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.6), 0 0 15px rgba(251, 191, 36, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.4) !important;
+}
+
+.spotlight-dismiss-btn:active {
+    transform: translateY(-1px) scale(0.98) !important;
+}
+
+/* 3. Ignored routine corrective alerts */
+.habit-reminder-card {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(0, 0, 0, 0.25) 100%);
+    border: 2px solid var(--accent-red);
+    border-radius: 18px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+    animation: border-flash 2s infinite alternate;
+}
+
+@keyframes border-flash {
+    0% { border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 0 10px rgba(239, 68, 68, 0.1); }
+    100% { border-color: rgba(239, 68, 68, 1); box-shadow: 0 0 25px rgba(239, 68, 68, 0.35); }
+}
+
+.habit-photo {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+/* 4. Attention feedback top strip */
+.feedback-warning-banner {
+    background: linear-gradient(90deg, #b91c1c 0%, #7f1d1d 100%);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 4px 15px rgba(185, 28, 28, 0.25);
+    animation: flash-banner 3s infinite;
+}
+
+@keyframes flash-banner {
+    0%, 100% { background: #b91c1c; }
+    50% { background: #ef4444; }
+}
+
+/* 5. Milestone Unlocks Overlay */
+.level-up-modal-content {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(2, 6, 12, 0.95) 100%);
+    border: 2px solid #f59e0b;
+    box-shadow: 0 0 45px rgba(245, 158, 11, 0.4);
+    border-radius: 28px;
+    max-width: 500px;
+    width: 100%;
+    padding: 35px 25px;
+    text-align: center;
+}
+
+.fireworks-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1001;
+}
+
+/* 6. Multi-Clip Audio Submission Interface */
+.enrichment-submission-panel {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 14px;
+}
+
+.clip-slots-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.clip-slot-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.clip-slot-btn.recorded {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: #22c55e;
+    color: #22c55e;
+}
+
+.clip-slot-btn.active {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.recording-controls-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: center;
+    justify-content: center;
+}
+
+.record-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.record-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.record-btn.recording {
+    animation: recording-pulse 1s infinite alternate;
+}
+
+@keyframes recording-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+    100% { transform: scale(1.15); box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
+}
+
+.media-upload-area {
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 14px;
+    transition: all 0.2s ease;
+}
+
+.media-upload-area:hover {
+    border-color: var(--accent-blue);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.version-telemetry-tag {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'Orbitron', monospace;
+    opacity: 0.55;
+    margin-top: 25px;
+    letter-spacing: 0.08em;
+}
+
+/* -------------------------------------------------------------
+ * FULLY RESPONSIVE DEVICE CONFORMANCE MEDIA QUERIES
+ * ------------------------------------------------------------- */
+@media (max-width: 1024px) {
+    body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        display: block !important;
+        padding: 16px !important;
+    }
+    
+    .dashboard-container {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        gap: 16px !important;
+    }
+    
+    .left-column {
+        grid-template-rows: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        gap: 16px !important;
+    }
+    
+    .right-column {
+        height: 350px !important;
+        grid-row: 1 !important;
+        border-radius: 20px !important;
+    }
+    
+    .solar-clock-body {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        gap: 16px !important;
+    }
+    
+    .inner-divider {
+        display: none !important;
+    }
+    
+    .solar-half, .clock-half {
+        padding: 20px !important;
+        height: auto !important;
+    }
+    
+    .clock-half {
+        align-items: center !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        padding-top: 24px !important;
+    }
+    
+    .weather-container {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto auto !important;
+        height: auto !important;
+        gap: 16px !important;
+    }
+    
+    .weather-main-panel {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .weather-animation-viewport {
+        display: none !important; /* Protect mobile CPU/GPU from rendering 3D SVG animations */
+    }
+    
+    .forecast-track {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        padding-top: 16px !important;
+    }
+    
+    .calendar-container {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        gap: 16px !important;
+    }
+    
+    .calendar-details {
+        max-height: 250px !important;
+        min-height: 150px !important;
+    }
+    
+    .leaderboard-flex-body {
+        flex-direction: column !important;
+        height: auto !important;
+        gap: 16px !important;
+    }
+    
+    .star-vertical-divider {
+        display: none !important;
+    }
+    
+    .leaderboard-list, .star-highlight-panel {
+        width: 100% !important;
+        flex: none !important;
+    }
+    
+    .star-highlight-panel {
+        padding: 20px !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .solar-grid-inline {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+    
+    .forecast-track {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+    
+    .weather-current-summary #weather-temp-main {
+        font-size: 2.2rem !important;
+        justify-content: center !important;
+    }
+    
+    .digital-clock-display #clock-digits {
+        font-size: 2.2rem !important;
+    }
+}
+/* 🛡️ Kiosk Display Privacy Rule */
+.hide-balances .point-bank-counter,
+.hide-balances .allowance-ledger-row,
+.hide-balances .child-points {
+    display: none !important;
+}
+
+/* 📺 Height-Based Viewport Zoom Scaling overrides to prevent scrollbars */
+@media (max-height: 1080px) {
+    .dashboard-container {
+        zoom: 0.92; /* Automatically fits standard monitor viewports without breaking pixel rules */
+    }
+}
+@media (max-height: 900px) {
+    .dashboard-container {
+        zoom: 0.85; /* Responsive scaling for compact secondary smart displays */
+    }
+}
+
+/* Responsive layout for extreme zoom levels (150%+) */
+@media (max-width: 1200px), (max-height: 800px) {
+    .dashboard-container {
+        gap: 12px;
+        padding: 12px;
+    }
+    .left-column {
+        gap: 12px;
+    }
+    .right-column {
+        border-radius: 16px;
+    }
+}

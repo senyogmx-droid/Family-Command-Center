@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Onboarding Wizard - Family Command Center</title>
+    <link rel="stylesheet" href="/style.css?v=6">
+    <link rel="stylesheet" href="/themes.css?v=6">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px !important;
+            background: radial-gradient(circle at center, #131926 0%, #07090e 100%) !important;
+        }
+        .wizard-container {
+            max-width: 680px;
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--panel-glow);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: relative;
+            overflow: hidden;
+            animation: wizard-fade-in 0.45s ease;
+        }
+        @keyframes wizard-fade-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .wizard-head
+        <!-- Global Error Banner -->
+        <div class="error-banner" id="wizard-error-banner">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="error-message"></span>
+        </div>
+        <form id="onboarding-form" onsubmit="submitOnboardingForm(event)">
+            <!-- STEP 1: PARENT ACCOUNT KEYS -->
+            <div class="wizard-step active" id="step-card-1">
+                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 16px; color: #fff;"><i class="fa-solid fa-key" style="color: var(--accent-blue); margin-right: 6px;"></i> Step 1: Parent Account Keys</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">Establish your administrative master credentials. This will serve as your password cockpit override to authorize spotlights, adjust balances, and customize layouts.</p>
+                <div class="form-group">
+                    <label>Parent Username</label>
+                    <input type="text" class="form-control" id="parent-username" placeholder="parent" value="parent" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="form-group">
+                        <label>Cockpit Password</label>
+                        <input type="password" class="form-control" id="parent-pw" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" class="form-control" id="parent-pw-confirm" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: -6px;"><i class="fa-solid fa-info-circle"></i> Password must be at least 4 characters long.</p>
+            </div>
+            <!-- STEP 2: CREW ROSTER INGESTIO
+                    <div class="info-guide-block">
+                        <h4><i class="fa-brands fa-google"></i> Gmail App Password Instructions</h4>
+                        <p style="margin-bottom: 10px;">To allow our engine to dispatch alerts safely through Gmail, you must generate an App Password:</p>
+                        <ol>
+                            <li>Navigate to your <strong>Google Account settings</strong> (<code>myaccount.google.com</code>).</li>
+                            <li>Select <strong>Security</strong> from the left navigation panel.</li>
+                            <li>Under <em>"How you sign in to Google"</em>, verify <strong>2-Step Verification</strong> is turned <strong>ON</strong>.</li>
+                            <li>Go to <code>myaccount.google.com/apppasswords</code>.</li>
+                            <li>Enter a custom name (e.g. <code>"Family Command Center"</code>) and click <strong>Create</strong>.</li>
+                            <li>Copy the generated <strong>16-character code</strong> (excluding spaces) and paste it into the password field above.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- STEP 4: SHARED SCHEDULES -->
+            <div class="wizard-step" id="step-card-4">
+                <h3 style="font-family: var(--font-heading); font-size: 1.25rem; margin-bottom: 16px; color: #fff;"><i class="fa-solid fa-calendar-days" style="color: var(--accent-blue); margin-right: 6px;"></i> Step 4: Shared Schedules & Solar Config</h3>
+                <!-- Solar Toggle -->
+                <div class="switch-container">
+                    <div>
+                        <span class="switch-label"><i class="fa-solid fa-solar-panel" style="color:var(--accent-green); margin-right: 6px;"></i> Enphase Solar Metrics</span>
+                        <div style="font-size:0.75rem; color: var(--text-secondary); margin-top:2px;">Display solar micro-production in bottom layout row</div>
+                    </div>
+                    <label class="switch-btn"><input type="checkbox" id="solar-enabled-toggle" checked><span class="slider"></span></label>
+                </div>
+                <!-- Calendar Link Area -->
+                <div class="form-group">
+                    <label>iCal Shared Calendar Link (Optional)</label>
+                    <textarea class="form-control" id="calendar-url" rows="2" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" style="resize: vertical; font-size:0.85rem; font-family: monospace;"></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Enlighten Email Username</label>
+                            <input type="email" class="form-control" id="enphase-user" placeholder="username@example.com">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Enlighten Password</label>
+                            <input type="password" class="form-control" id="enphase-pass" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>System Name Profile</label>
+                            <input type="text" class="form-control" id="enphase-system" placeholder="e.g. Mavis">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Gateway Serial Number</label>
+                            <input type="text" class="form-control" id="enphase-serial" placeholder="e.g. 202343015894">
+                        </div>
+                    </div>
+                </div>
+                <!-- Calendar Link Area -->
+                <div class="form-group">
+                    <label>iCal Shared Calendar Link (Optional)</label>
+                    <textarea class="form-control" id="calendar-url" rows="2" placeholder="https://calendar.google.com/calendar/ical/.../basic.ics" style="resize: vertical; font-size:0.85rem; font-family: monospace;"></textarea>
+                </div>
+                <!-- Google Photos Album Link Area -->
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Google Photos Shared Album URL (Optional)</label>
+                    <textarea class="form-control" id="google-photos-url" rows="2" placeholder="https://photos.app.goo.gl/..." style="resize: vertical; font-size:0.85rem; font-family: monospace;"></textarea>
+                    <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;"><i class="fa-solid fa-info-circle"></i> If left empty, the dashboard slideshow will cycle through premium default fallback photos automatically.</p>
+                </div>
+                <!-- Step-by-step walkthrough documentation text -->
+                <div class="info-guide-block">
+                    <h4><i class="fa-solid fa-circle-nodes"></i> How to Fetch Shared Link Addresses</h4>
+                    <p style="margin-bottom: 10px; font-weight: 500; color: #fff;">Google Calendar (Web):</p>
+                    <ol style="margin-bottom:
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.initialized) {
+                        // 1. Parent username
+                        document.getElementById("parent-username").value = data.parent_username || "parent";
+                        // 2. Pre-populate password fields with placeholder sentinel
+                        document.getElementById("parent-pw").value = "••••••••";
+                        document.getElementById("parent-pw-confirm").value = "••••••••";
+                        // 3. Children roster
+                        const listContainer = document.getElementById("crew-members-list");
+                        listContainer.innerHTML = ""; // Clear default placeholders
+                        if (data.children && data.children.length > 0) {
+                            data.children.forEach(child => {
+                                addCrewMember(child.name, child.age, child.theme);
+                            });
+                <div style="flex: 1.1;">
+                    <label>Theme Preset</label>
+                    <select name="child_theme[]" cla
+                        <option value="gamer" ${theme === 'gamer' ? 'selected' : ''}>Gamer 🎮</option>
+                        <option value="dinosaur" ${theme === 'dinosaur' ? 'selected' : ''}>Dinosaur 🦕</option>
+                        <option value="princess" ${theme === 'princess' ? 'selected' : ''}>Princess 👑</option>
+                <button type="button" class="btn-action" id="btn-next" onclick="navigateStep(1)">Next Step <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </form>
+        <div class="telemetry-tag">
+            Family Command Center Onboarding v3.2.2 Setup Engine
+        </div>
+    </div>
+            container.appendChild(div);
+        }
+        function removeCrewMember(btn) {
+            const row = btn.parentNode;
+            const container = document.getElementById("crew-members-list");
+            if (container.querySelectorAll(".crew-member-row").length <= 1) {
+                showError("You must register at least one child profile to initialize points tracking systems!");
+                return;
+            }
+            row.parentNode.removeChild(row);
+        }
+                <div style="width: 80px;">
+                    <label>Age</label>
+                    <input type="number" name="child_age[]" class="form-control" placeholder="6" min="1" max="25" value="${age}" required style="padding:10px 14px; font-size:0.88rem;">
+                </div>
+                <div style="flex: 1.1;">
+                    <label>Theme Preset</label>
+                    <select name="child_theme[]" class="form-control" style="padding:10px 14px; font-size:0.88rem; background: rgba(0,0,0,0.3); color:#fff; border: 1px solid rgba(255,255,255,0.08);">
+                        <option value="gamer" ${theme === 'gamer' ? 'selected' : ''}>Gamer 🎮</option>
+                        <option value="dinosaur" ${theme === 'dinosaur' ? 'selected' : ''}>Dinosaur 🦕</option>
+                        <option value="princess" ${theme === 'princess' ? 'selected' : ''}>Princess 👑</option>
+                        <option value="mecha" ${theme === 'mecha' ? 'selected' : ''}>Mecha 🤖</option>
+                        <option value="fortnite" ${theme === 'fortnite' ? 'selected' : ''}>Fortnite 🏆</option>
+                        <option value="roblox" ${theme === 'roblox' ? 'selected' : ''}>Roblox 🧱</option>
+                        <option value="teen-dark" ${theme === 'teen-dark' ? 'selected' : ''}>Teen Dark 🎓</option>
+                        <option value="minimalist" ${theme === 'minimalist' ? 'selected' : ''}>Minimalist ⚪</option>
+                        document.getElementById("enphase-pass").value = data.enphase_password || "";
+                        document.getElementById("enphase-system").value = data.enphase_system_name || "";
+                        document.getElementById("enphase-serial").value = data.enphase_gateway_serial || "";
+                        // 6. Google Photos Shared Album link
+                        document.getElementById("google-photos-url").value = data.google_photos_url || "";
+                        // 7. Calendar ICS configuration
+                        document.getElementById("calendar-url").value = data.calendar_url || "";
+                    } else {
+                        // Uninitialized, seed normal defaults
+                        addCrewMember("Axel", 6, "dinosaur");
+                        addCrewMember("Cayden", 10, "gamer");
+                        toggleSolarFields(true); // Default solar config panel display
+                    }
+                } else {
+                    addCrewMember("Axel", 6, "dinosaur");
+                    addCrewMember("Cayden", 10, "gamer");
+                }
+            } catch (err) {
+                console.error("Failed to fetch system config:", err);
+                addCrewMember("Axel", 6, "dinosaur");
+                addCrewMember("Cayden", 10, "gamer");
+            }
+            updateStepView();
+        });
+        function addCrewMember(name = "", age = "", theme = "gamer") {
+            const container = document.getElementById("crew-members-list");
+            const div = document.createElement("div");
+            div.className = "crew-member-row";
+        }
+        function showError(msg) {
+            const banner = document.getElementById("wizard-error-banner");
+            const txt = document.getElementById("error-message");
+            txt.textContent = msg;
+            banner.style.display = "flex";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function hideError() {
+            document
+                const rows = document.querySelectorAll(".crew-member-row");
+                if (rows.length === 0) {
+                    showError("Please add at least one child profile!");
+                    return false;
+                }
+                let valid = true;
+                rows.forEach(r => {
+                    const name = r.querySelector('input[name="child_name[]"]').value.trim();
+                    const age = parseInt(r.querySelector('input[name="child_age[]"]').value);
+                    if (!name) {
+                        showError("All crew members must have a registered name!");
+                        valid = false;
+                    }
+                    if (isNaN(age) || age < 1 || age > 25) {
+                        showError("Please enter a valid age between 1 and 25 years!");
+                        valid = false;
+                    }
+                });
+                return valid;
+            } else if (step === 3) {
+                const checked = document.getElementById("email-enabled-toggle").checked;
+                if (checked) {
+                    const user = document.getElementById("smtp-user").value.trim();
+                    const pass = document.getElementById("smtp-pass").value.trim();
+                    const to = document.getElementById("smtp-to").value.trim();
+                    if (!user || !pass || !to) {
+                        showError("All SMTP notification credentials are required when alerts are toggled ON!");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function navigateStep(delta) {
+            if (delta === 1) {
+                if (!validateStep(currentStep)) return;
+                if (currentStep === totalSteps) {
+                    submitOnboardingForm();
+                    return;
+                }
+            }
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) {
+                currentStep = totalSteps;
+                return;
+            }
+            updateStepView();
+        }
+        function updateStepView() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+            }
+            // Show active step
+            const activeCard = document.getElementById("step-card-" + currentStep);
+            const activeIndicator = document.getElementById("indicator-" + currentStep);
+            if (activeCard) activeCard.classList.add("active");
+            if (activeIndicator) activeIndicator.classList.add("active");
+            // Update Progress Bar
+            const bar = document.getElementById("progress-bar");
+            const percent = (currentStep / totalSteps) * 100;
+            if (bar) bar.style.width = percent + "%";
+            // Update navigation buttons
+            const backBtn = document.getElementById("btn-back");
+            const nextBtn = document.getElementById("btn-next");
+            if (currentStep === 1) {
+                if (backBtn) backBtn.style.display = "none";
+            } else {
+                if (backBtn) backBtn.style.display = "inline-flex";
+            }
+            if (currentStep === totalSteps) {
+                if (nextBtn) {
+                    nextBtn.innerHTML = `[🚀 Launch Core Matrix]`;
+                    nextBtn.type = "submit";
+                    nextBtn.onclick = null; // Submit naturally via form
+                }
+            } else {
+                if (nextBtn) {
+                    nextBtn.innerHTML = `Next Step <i class="fa-solid fa-chevron-right"></i>`;
+                    nextBtn.type = "button";
+                    nextBtn.onclick = () => navigateStep(1);
+                }
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        async function submitOnboardingForm(e) {
+            e.preventDefault();
+            if (!validateStep(4)) return;
+            const nextBtn = document.getElementById("btn-next");
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Initializing core modules...`;
+            // Prepare unified payload
+            const parent_username = document.getElementById("parent-username").value.trim();
+            const parent_password = document.getElementById("parent-pw").value;
+            // Collect dynamic crew roster
+            const children = [];
+            const rows = document.querySelectorAll(".crew-member-row");
+            rows.forEach(r => {
+                const name = r.querySelector('input[name="child_name[]"]').value.trim();
+                const age = parseInt(r.querySelector('input[name="child_age[]"]').value);
+                const theme = r.querySelector('select[name="child_theme[]"]').value;
+                children.push({ name, age, theme });
+            });
+            const email_enabled = document.getElementById("email-enabled-toggle").checked;
+            const smtp_user = document.getElementById("smtp-user").value.trim();
+            const smtp_pass = document.getElementById("smtp-pass").value.trim();
+            const smtp_to_email = document.getElementById("smtp-to").value.trim();
+            const solar_enabled = document.getElementById("solar-enabled-toggle").checked ? 1 : 0;
+            const calendar_url = document.getElementById("calendar-url").value.trim();
+            const payload = {
+                parent_username,
+            const calendar_url = document.getElementById("calendar-url").value.trim();
+            const payload = {
+                parent_username,
+                parent_password,
+                children,
+                email_enabled,
+                smtp_user,
+                smtp_pass,
+                smtp_to_email,
+                solar_enabled,
+                calendar_url
+            };
+            try {
+                const response = await fetch("/api/system/initialize", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (response.ok) {
+                    nextBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> System Seeded! Redirecting...`;
+                    nextBtn.style.background = "#22c55e";
+                    nextBtn.style.color = "#fff";
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1200);
+                } else {
+                    const err = await response.json();
+                    showError("Initialization failure: " + (err.message || "Unknown error occurred."));
+                    nextBtn.disabled = false;
+                    nextBtn.innerHTML = `[🚀 Launch Core Matrix]`;
+                }
+            } catch (err) {
+                showError("Network exception occurred while synchronizing database keys: " + err);
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = `[🚀 Launch Core Matrix]`;
+            }
+        }
+            if (e) e.preventDefault();
+            if (!validateStep(4)) return;
+            const nextBtn = document.getElementById("btn-next");
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Initializing core modules...`;
+            // Prepare unified payload
+            const parent_username = document.getElementById("parent-username").value.trim();
+            const parent_password = document.getElementById("parent-pw").value;
+            // Collect dynamic crew roster
+            const children = [];
+            const rows = document.querySelectorAll(".crew-member-row");
+            rows.forEach(r => {
+                const name = r.querySelector('input[name="child_name[]"]').value.trim();
+                const age = parseInt(r.querySelector('input[name="child_age[]"]').value);
+                const theme = r.querySelector('select[name="child_theme[]"]').value;
+                children.push({ name, age, theme });
+            });
+            const email_enabled = document.getElementById("email-enabled-toggle").checked;
+            const smtp_user = document.getElementById("smtp-user").value.trim();
+            const smtp_pass = document.getElementById("smtp-pass").value.trim();
+            const smtp_to_email = document.getElementById("smtp-to").value.trim();
+            const solar_enabled = document.getElementById("solar-enabled-toggle").checked ? 1 : 0;
+            const enphase_username = document.getElementById("enphase-user").value.trim();
+            const enphase_password = document.getElementById("enphase-pass").value;
+            const enphase_system_name = document.getElementById("enphase-system").value.trim();
+            const enphase_gateway_serial = document.getElementById("enphase-serial").value.trim();
+            const google_photos_url = document.getElementById("google-photos-url").value.trim();
+            const calendar_url = document.getElementById("calendar-url").value.trim();
+            const payload = {
+                parent_username,
+                parent_password,
+                children,
+                email_enabled,
+                smtp_user,
+                smtp_pass,
+                smtp_to_email,
+                solar_enabled,
+                enphase_username,
+                enphase_password,
+                enphase_system_name,
+                enphase_gateway_serial,
+                google_photos_url,
+                calendar_url
+            };
+            try {
+                const response = await fetch("/api/system/initialize", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
