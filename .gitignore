@@ -2,8 +2,8 @@
 *
 
 # Allow this .gitignore file and the root README.md
-!.gitignore
-!README.md
+!/.gitignore
+!/README.md
 
 # Allow only the Windows and Linux binaries
 !V3/
