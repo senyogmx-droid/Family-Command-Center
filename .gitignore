@@ -1,8 +1,9 @@
 # Ignore everything by default to keep source code local-only
 *
 
-# Allow this .gitignore file
+# Allow this .gitignore file and the root README.md
 !.gitignore
+!README.md
 
 # Allow only the Windows and Linux binaries
 !V3/
