@@ -6,6 +6,16 @@ This repository contains the standalone executables for Windows and Linux. The s
 
 ---
 
+## 💡 What is the Family Command Center?
+
+The **Family Command Center** is a local smart-home kiosk and productivity hub that turns household chore management into a gamified, interactive experience. Built to run on a local home server, it acts as the central hub for the household, connecting family members through custom interactive portals:
+
+* **🖥️ Main Family Kiosk**: A shared wall-mounted display showing a beautiful double-buffered photo slideshow, real-time Enphase solar home energy metrics, local weather forecasts, calendar schedules, and a live points leaderboard.
+* **🦖 Kids' Quest Portal**: A gamified checklist where kids track their chores, earn spendable points, gain XP to level up, review their points on custom graphs, and interact with gaze-tracking theme avatars (Arcade Gamer, Prehistoric Dino, Princess, and Cyber-Mecha).
+* **🛡️ Parent Audit & Control Cockpit**: A secure control room for parents to review children's audio/photo chore submissions, log violations (with a penalty-refund slider), and award spontaneous spotlights that trigger real-time screen-wide alerts.
+
+---
+
 ## 🚀 How to Launch the Application
 
 Select the instructions for your operating system below to start the standalone, precompiled Family Command Center server.
